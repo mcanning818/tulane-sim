@@ -1,0 +1,34 @@
+{
+  "name": "tulane-sim",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "studio": "remotion studio --no-open",
+    "trailer": "remotion render TulaneIntro out/tulane-trailer.mp4",
+    "fetch-osm": "node scripts/fetch-osm.mjs",
+    "selftest": "vite build --ssr scripts/selftest.ts --outDir .selftest --logLevel error --minify false && node .selftest/selftest.js",
+    "still": "remotion still TulaneIntro out/still.png --frame=330"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
+    "@remotion/cli": "^4.0.520",
+    "@remotion/three": "^4.0.520",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "remotion": "^4.0.520",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "@types/three": "^0.185.4",
+    "@vitejs/plugin-react-swc": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2"
+  }
+}
