@@ -11,7 +11,8 @@
     "trailer": "remotion render TulaneIntro out/tulane-trailer.mp4",
     "fetch-osm": "node scripts/fetch-osm.mjs",
     "selftest": "vite build --ssr scripts/selftest.ts --outDir .selftest --logLevel error --minify false && node .selftest/selftest.js",
-    "still": "remotion still TulaneIntro out/still.png --frame=330"
+    "still": "remotion still TulaneIntro out/still.png --frame=330",
+    "measure": "vite build --ssr scripts/measure-runs.ts --outDir .selftest --logLevel error --minify false && node .selftest/measure-runs.js"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",

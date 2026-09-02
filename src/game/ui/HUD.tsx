@@ -4,6 +4,7 @@ import {COLLECTIBLES} from '../collectibles';
 import {npcById} from '../npcs';
 import {clearToast, completionPct, useGame} from '../state';
 import {Minimap} from './Minimap';
+import {RunHud} from './RunHud';
 
 const panel: React.CSSProperties = {
   background: 'rgba(9,22,32,0.78)',
@@ -16,6 +17,8 @@ const panel: React.CSSProperties = {
 
 const Toast: React.FC = () => {
   const toast = useGame((s) => s.toast);
+  // The race clock owns the top-center slot during a round, so drop below it.
+  const runActive = useGame((s) => Boolean(s.run) && s.run?.status !== 'done');
   useEffect(() => {
     if (!toast) return;
     const id = setTimeout(() => clearToast(toast.id), 3600);
@@ -28,11 +31,12 @@ const Toast: React.FC = () => {
       style={{
         ...panel,
         position: 'absolute',
-        top: 24,
+        top: runActive ? 152 : 24,
         left: '50%',
         transform: 'translateX(-50%)',
         textAlign: 'center',
         minWidth: 280,
+        transition: 'top 200ms ease',
         borderColor: 'rgba(90,210,240,0.55)',
       }}
     >
@@ -48,6 +52,7 @@ export const HUD: React.FC = () => {
   const collected = useGame((s) => s.collected);
   const nearbyNpc = useGame((s) => s.nearbyNpc);
   const dialogueNpc = useGame((s) => s.dialogueNpc);
+  const run = useGame((s) => s.run);
   const pct = useGame(completionPct);
   const zone = ZONES.find((z) => z.id === zoneId);
 
@@ -109,7 +114,7 @@ export const HUD: React.FC = () => {
         <span><b>Esc</b> free cursor</span>
       </div>
 
-      {nearbyNpc && !dialogueNpc ? (
+      {nearbyNpc && !dialogueNpc && !run ? (
         <div
           style={{
             ...panel,
@@ -125,6 +130,7 @@ export const HUD: React.FC = () => {
         </div>
       ) : null}
 
+      <RunHud />
       <Toast />
     </div>
   );

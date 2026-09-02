@@ -38,7 +38,7 @@ export const Player: React.FC = () => {
   useEffect(() => {
     const interact = () => {
       const s = getState();
-      if (s.dialogueNpc || s.minigameId) return;
+      if (s.dialogueNpc || s.run) return;
       const near = NPCS.find(
         (n) => Math.hypot(n.x - pos.current.x, n.z - pos.current.z) < TALK_RANGE,
       );
@@ -52,6 +52,18 @@ export const Player: React.FC = () => {
 
   useFrame((_, rawDelta) => {
     const delta = Math.min(rawDelta, 0.05); // a tab-switch must not teleport the player
+
+    // A minigame start line, or anything else that repositions the player.
+    if (player.teleportTo) {
+      const [tx, tz] = player.teleportTo;
+      player.teleportTo = null;
+      const [sx, sz] = resolveCollision(tx, tz, RADIUS);
+      pos.current.x = sx;
+      pos.current.z = sz;
+      pos.current.y = 0;
+      vel.current.y = 0;
+    }
+
     const paused = getState().paused;
     const look = consumeMouse();
 

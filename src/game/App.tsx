@@ -3,6 +3,7 @@ import {Canvas} from '@react-three/fiber';
 import {Campus, CampusLights} from '../world/CampusScene';
 import {PALETTE} from '../world/palette';
 import {CollectibleField} from './CollectibleField';
+import {MinigameField} from './MinigameField';
 import {NpcField} from './NpcField';
 import {Player} from './Player';
 import {Dialogue} from './ui/Dialogue';
@@ -13,6 +14,7 @@ import {useGame} from './state';
 const StartOverlay: React.FC = () => {
   const [locked, setLocked] = useState(false);
   const paused = useGame((s) => s.paused);
+  const run = useGame((s) => s.run);
 
   useEffect(() => {
     const onChange = () => setLocked(Boolean(document.pointerLockElement));
@@ -20,7 +22,8 @@ const StartOverlay: React.FC = () => {
     return () => document.removeEventListener('pointerlockchange', onChange);
   }, []);
 
-  if (locked || paused) return null;
+  // Never sit a "click to play" scrim on top of a live round.
+  if (locked || paused || run) return null;
 
   return (
     <div
@@ -69,6 +72,7 @@ export const App: React.FC = () => (
       <CampusLights />
       <Campus />
       <CollectibleField />
+      <MinigameField />
       <NpcField />
       <Player />
     </Canvas>

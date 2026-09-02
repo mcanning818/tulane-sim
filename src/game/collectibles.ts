@@ -1,5 +1,6 @@
-import {campus, hash01, ZONES} from '../world/campus';
+import {spreadOnWalks, hash01, ZONES} from '../world/campus';
 import {isInsideAnyBuilding} from '../world/collision';
+import type {Vec2} from '../world/types';
 
 export type CollectibleType = {
   type: string;
@@ -27,37 +28,28 @@ export type Collectible = CollectibleType & {
 };
 
 /**
- * Pickups sit on real walking paths inside each zone, spaced out and never inside
- * a building. Placement is derived from the baked OSM data, so it is identical on
- * every machine and every run without hand-authoring 40 coordinates.
+ * Pickups sit on real walking paths inside each zone, derived from the baked OSM
+ * data so placement is identical on every machine without hand-authoring 35
+ * coordinates.
  */
 const place = (): Collectible[] => {
   const out: Collectible[] = [];
+  const used: Vec2[] = [];
 
   for (const zone of ZONES) {
-    const candidates: [number, number][] = [];
-    for (const path of campus.paths) {
-      if (path.kind !== 'walk') continue;
-      for (const [x, z] of path.points) {
-        const d = Math.hypot(x - zone.center[0], z - zone.center[1]);
-        if (d > zone.radius * 0.85) continue;
-        if (isInsideAnyBuilding(x, z)) continue;
-        candidates.push([x, z]);
-      }
-    }
-
     const target = zone.radius > 100 ? 8 : 6;
-    let placed = 0;
-    for (let i = 0; i < candidates.length && placed < target; i++) {
-      // Stride through the candidate list rather than taking the first N, which
-      // would cluster every pickup onto whichever footway got fetched first.
-      const idx = Math.floor(hash01(i * 9.71 + zone.center[0]) * candidates.length);
-      const [x, z] = candidates[idx];
-      if (out.some((c) => Math.hypot(c.x - x, c.z - z) < 22)) continue;
-      const type = TYPES[(placed + Math.floor(hash01(idx) * TYPES.length)) % TYPES.length];
-      out.push({...type, id: `${zone.id}-${placed}`, x: +x.toFixed(2), z: +z.toFixed(2), zoneId: zone.id});
-      placed++;
-    }
+    // Full radius, not 85%: the dense districts have few footways and the tighter
+    // window left the Science District with half the pickups of the Quad.
+    const spots = spreadOnWalks(zone.center, zone.radius, target, {
+      minSpacing: 22,
+      exclude: used,
+      blocked: isInsideAnyBuilding,
+    });
+    spots.forEach(([x, z], i) => {
+      used.push([x, z]);
+      const type = TYPES[(i + Math.floor(hash01(x * 3.1 + z * 7.7) * TYPES.length)) % TYPES.length];
+      out.push({...type, id: `${zone.id}-${i}`, x, z, zoneId: zone.id});
+    });
   }
 
   return out;

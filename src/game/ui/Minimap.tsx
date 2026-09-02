@@ -1,6 +1,7 @@
 import {useEffect, useRef} from 'react';
 import {campus, ZONES} from '../../world/campus';
 import {COLLECTIBLES} from '../collectibles';
+import {minigameById} from '../minigames';
 import {NPCS} from '../npcs';
 import {getState, player, useGame} from '../state';
 
@@ -120,6 +121,24 @@ export const Minimap: React.FC = () => {
         ctx.beginPath();
         ctx.arc(sx, sz, 2.6, 0, Math.PI * 2);
         ctx.fill();
+      }
+
+      const activeRun = state.run;
+      const activeGame = activeRun ? minigameById(activeRun.gameId) : undefined;
+      if (activeRun && activeGame && activeRun.status !== 'done') {
+        const pending =
+          activeGame.kind === 'route'
+            ? activeGame.targets.slice(activeRun.taken.length, activeRun.taken.length + 2)
+            : activeGame.targets.filter((_, i) => !activeRun.taken.includes(i));
+        pending.forEach((t, i) => {
+          const [sx, sz] = toScreen(t[0], t[1]);
+          ctx.fillStyle = activeGame.targetColor;
+          ctx.globalAlpha = i === 0 ? 1 : 0.45;
+          ctx.beginPath();
+          ctx.arc(sx, sz, 4.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        });
       }
 
       for (const npc of NPCS) {
