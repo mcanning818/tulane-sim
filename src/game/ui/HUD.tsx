@@ -132,6 +132,29 @@ export const HUD: React.FC = () => {
 
       <RunHud />
       <Toast />
+
+      {/* ODbL requires visible attribution wherever the map data is shown. */}
+      <div
+        style={{
+          position: 'absolute',
+          right: 10,
+          bottom: 8,
+          fontSize: 10,
+          color: 'rgba(233,244,251,0.55)',
+          pointerEvents: 'auto',
+        }}
+      >
+        Map data ©{' '}
+        <a
+          href="https://www.openstreetmap.org/copyright"
+          target="_blank"
+          rel="noreferrer"
+          style={{color: 'inherit'}}
+        >
+          OpenStreetMap contributors
+        </a>
+        {' '}· Unofficial fan project, not affiliated with Tulane University
+      </div>
     </div>
   );
 };
