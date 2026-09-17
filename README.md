@@ -1,5 +1,7 @@
 # Tulane Sim
 
+**[Play it in your browser →](https://mcanning818.github.io/tulane-sim/)** Desktop only: keyboard and mouse.
+
 A third-person, Roblox-flavored open-world walk around Tulane's uptown campus, built
 on real OpenStreetMap footprints. The game runs on React Three Fiber; Remotion
 imports the exact same 3D scene to render cinematics and the trailer.
